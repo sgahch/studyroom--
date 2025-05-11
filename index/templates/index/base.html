@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="144x144" href="{% static 'img/logo.svg' %}"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'css/music-player.css' %}" rel="stylesheet">
+    <style>
+        /* 优化版Logo样式 */
+        .logo-link {
+            padding: 0.85rem 1.5rem;
+            border-radius: 8px;
+            background-color: #e6f3ff;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid #0d6efd30;
+            transition: all 0.3s ease;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #0d6efd;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-link:hover {
+            background-color: #f0f8ff;
+            transform: translateY(-1px);
+            border-color: #0d6efd50;
+        }
+
+        .logo-link:active {
+            transform: translateY(1px);
+            background-color: #d9ebff;
+        }
+
+        @media (max-width: 768px) {
+            .logo-link {
+                padding: 0.75rem 1.25rem;
+                border-radius: 6px;
+            }
+            .logo-text {
+                font-size: 1.15rem;
+            }
+        }
+
+        @keyframes logoGlow {
+            0% { box-shadow: 0 0 0 rgba(13, 110, 253, 0); }
+            50% { box-shadow: 0 0 10px rgba(13, 110, 253, 0.2); }
+            100% { box-shadow: 0 0 0 rgba(13, 110, 253, 0); }
+        }
+
+        .logo-link:hover::before {
+            animation: logoGlow 1.5s ease-in-out infinite;
+        }
+
+        /* 基础样式 */
+        :root {
+            --sidebar-width: 280px;
+            --primary-color: #0d6efd;
+            --primary-light: #e6f3ff;
+            --primary-hover: #f0f8ff;
+            --text-primary: #2c3e50;
+            --text-secondary: #6c757d;
+            --transition-speed: 0.3s;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            color: var(--text-primary);
+        }
+
+        /* 导航链接样式 */
+        .nav-link {
+            color: var(--text-primary);
+            border-radius: 12px;
+            transition: all var(--transition-speed) ease;
+            padding: 0.85rem 1.25rem;
+            margin-bottom: 0.5rem;
+            background-color: transparent;
+            border: 1px solid transparent;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background-color: var(--primary-hover);
+            color: var(--primary-color);
+            transform: translateX(5px);
+            border-color: rgba(13,110,253,0.1);
+        }
+
+        .nav-link.active {
+            background-color: var(--primary-hover);
+            color: var(--primary-color);
+            border-color: rgba(13,110,253,0.2);
+            box-shadow: 0 4px 12px rgba(13,110,253,0.1);
+        }
+
+        .nav-link i {
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link:hover i {
+            transform: scale(1.2);
+        }
+
+        /* 用户资料样式 */
+        .user-profile {
+            padding: 1rem;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ffffff 0%, var(--primary-light) 100%);
+            margin-bottom: 1rem;
+        }
+
+        .user-info {
+            padding: 0.75rem;
+            border-radius: 12px;
+            transition: all var(--transition-speed) ease;
+            cursor: pointer;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            overflow: hidden;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform var(--transition-speed) ease;
+            border: 2px solid rgba(13,110,253,0.2);
+        }
+
+        .user-info:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .student-id {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        /* 侧边栏样式 */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, #ffffff 0%, var(--primary-light) 100%);
+            padding: 1.5rem 1rem;
+            box-shadow: 0 0 30px rgba(13,110,253,0.08);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            transition: all var(--transition-speed) ease;
+            border-right: 1px solid rgba(13,110,253,0.1);
+        }
+
+        /* 主内容区 */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            min-height: 100vh;
+            background-color: #ffffff;
+            padding: 2rem;
+            position: relative;
+            transition: all var(--transition-speed) ease;
+            box-shadow: inset 0 0 30px rgba(13,110,253,0.03);
+        }
+
+        /* 主内容区卡片样式 */
+        .main-content .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(13,110,253,0.08);
+            transition: all var(--transition-speed) ease;
+            background: linear-gradient(135deg, #ffffff 0%, var(--primary-light) 100%);
+            margin-bottom: 1.5rem;
+        }
+
+        .main-content .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(13,110,253,0.12);
+        }
+
+        .main-content .card-header {
+            background: transparent;
+            border-bottom: 1px solid rgba(13,110,253,0.1);
+            padding: 1.25rem 1.5rem;
+            border-radius: 16px 16px 0 0 !important;
+        }
+
+        .main-content .card-header h5 {
+            margin: 0;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .main-content .card-body {
+            padding: 1.5rem;
+        }
+
+        /* 表格样式优化 */
+        .main-content .table {
+            margin-bottom: 0;
+        }
+
+        .main-content .table th {
+            background-color: rgba(13,110,253,0.05);
+            border-bottom: 2px solid rgba(13,110,253,0.1);
+            color: var(--text-primary);
+            font-weight: 600;
+            padding: 1rem;
+        }
+
+        .main-content .table td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(13,110,253,0.05);
+        }
+
+        .main-content .table tr:hover {
+            background-color: rgba(13,110,253,0.02);
+        }
+
+        /* 按钮样式优化 */
+        .main-content .btn {
+            padding: 0.5rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .main-content .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0a58ca 100%);
+            border: none;
+            box-shadow: 0 4px 12px rgba(13,110,253,0.2);
+        }
+
+        .main-content .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(13,110,253,0.3);
+        }
+
+        /* 表单样式优化 */
+        .main-content .form-control {
+            border-radius: 8px;
+            border: 1px solid rgba(13,110,253,0.1);
+            padding: 0.75rem 1rem;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .main-content .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(13,110,253,0.1);
+        }
+
+        /* 状态标签样式 */
+        .main-content .badge {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        /* 分页样式优化 */
+        .main-content .pagination {
+            margin-bottom: 0;
+        }
+
+        .main-content .page-link {
+            border: none;
+            color: var(--primary-color);
+            padding: 0.5rem 1rem;
+            margin: 0 0.25rem;
+            border-radius: 6px;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .main-content .page-link:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+
+        .main-content .page-item.active .page-link {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0a58ca 100%);
+            color: white;
+        }
+
+        /* 响应式优化 */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .main-content .card {
+                border-radius: 12px;
+            }
+            
+            .main-content .card-header {
+                padding: 1rem;
+            }
+            
+            .main-content .card-body {
+                padding: 1rem;
+            }
+            
+            .main-content .table th,
+            .main-content .table td {
+                padding: 0.75rem;
+            }
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 768px) {
+            :root {
+                --sidebar-width: 100%;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+                padding: 1rem;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .logo-link {
+                padding: 0.75rem 1rem;
+            }
+            
+            .nav-link {
+                padding: 0.75rem 1rem;
+            }
+        }
+
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .main-content {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--primary-light);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0a58ca;
+        }
+
+        /* 倒计时和计划区域样式 */
+        .study-timer-section {
+            display: flex;
+            gap: 2rem;
+            margin: 2rem 0;
+            align-items: stretch;
+        }
+
+        /* 倒计时卡片样式 */
+        .timer-card {
+            flex: 1;
+            background: linear-gradient(135deg, #ffffff 0%, var(--primary-light) 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(13,110,253,0.08);
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-width: 300px;
+        }
+
+        .timer-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(13,110,253,0.12);
+        }
+
+        .timer-display {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-align: center;
+            margin: 1.5rem 0;
+            font-family: 'Segoe UI', monospace;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(13,110,253,0.1);
+        }
+
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            width: 100%;
+        }
+
+        .timer-btn {
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all var(--transition-speed) ease;
+            border: none;
+            cursor: pointer;
+            min-width: 120px;
+        }
+
+        .timer-btn.start {
+            background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(40,167,69,0.2);
+        }
+
+        .timer-btn.pause {
+            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+            color: #000;
+            box-shadow: 0 4px 12px rgba(255,193,7,0.2);
+        }
+
+        .timer-btn.reset {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(220,53,69,0.2);
+        }
+
+        /* 计划卡片样式 */
+        .plan-card {
+            flex: 1.5;
+            background: linear-gradient(135deg, #ffffff 0%, var(--primary-light) 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(13,110,253,0.08);
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            flex-direction: column;
+            min-width: 400px;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(13,110,253,0.12);
+        }
+
+        .plan-form {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .plan-input-group {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .plan-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(13,110,253,0.1);
+            transition: all var(--transition-speed) ease;
+            font-size: 1rem;
+        }
+
+        .plan-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(13,110,253,0.1);
+            outline: none;
+        }
+
+        .plan-submit {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0a58ca 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            white-space: nowrap;
+        }
+
+        .plan-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(13,110,253,0.3);
+        }
+
+        /* 计划列表样式 */
+        .plan-list {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 400px;
+            padding-right: 0.5rem;
+        }
+
+        .plan-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(255,255,255,0.8);
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            transition: all var(--transition-speed) ease;
+            border: 1px solid rgba(13,110,253,0.05);
+        }
+
+        .plan-item:hover {
+            background: rgba(255,255,255,0.9);
+            transform: translateX(5px);
+            border-color: rgba(13,110,253,0.1);
+        }
+
+        .plan-item.completed {
+            background: rgba(40,167,69,0.1);
+            border-left: 4px solid #28a745;
+        }
+
+        .plan-item-text {
+            flex: 1;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .plan-item-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .plan-item-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            font-weight: 500;
+        }
+
+        .plan-item-btn.complete {
+            background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+            color: white;
+        }
+
+        .plan-item-btn.delete {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+        }
+
+        /* 响应式优化 */
+        @media (max-width: 1200px) {
+            .study-timer-section {
+                flex-direction: column;
+            }
+            
+            .timer-card,
+            .plan-card {
+                width: 100%;
+                min-width: unset;
+            }
+            
+            .timer-display {
+                font-size: 3.5rem;
+            }
+            
+            .plan-form {
+                flex-direction: column;
+            }
+            
+            .plan-input-group {
+                width: 100%;
+            }
+            
+            .plan-submit {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .study-timer-section {
+                margin: 1rem 0;
+                gap: 1rem;
+            }
+            
+            .timer-card,
+            .plan-card {
+                padding: 1.5rem;
+            }
+            
+            .timer-display {
+                font-size: 3rem;
+                margin: 1rem 0;
+            }
+            
+            .timer-controls {
+                flex-wrap: wrap;
+            }
+            
+            .timer-btn {
+                flex: 1;
+                min-width: 100px;
+                padding: 0.5rem 1rem;
+            }
+        }
+    </style>
+    <title>{% block title %}{% endblock %} - 自习室座位预约系统</title>
+</head>
+<body>
+<div class="d-flex">
+    <div class="sidebar">
+        <div class="d-flex flex-column h-100">
+            <!-- Logo and Navigation -->
+            <div class="px-3 mb-4">
+                <a href="{% url 'index' %}" class="logo-link">
+                    <span class="logo-text">自习室预约系统</span>
+                </a>
+            </div>
+            
+            <nav class="flex-grow-1">
+                <ul class="nav flex-column px-3">
+                    <li class="nav-item mb-2">
+                        <a href="{% url 'index' %}" class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %} d-flex align-items-center">
+                            <i class="fas fa-home me-2"></i> <span>首页</span>
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="{% url 'bookings' %}" class="nav-link {% if request.resolver_match.url_name == 'bookings' %}active{% endif %} d-flex align-items-center">
+                            <i class="fas fa-calendar-alt me-2"></i> <span>预约座位</span>
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="{% url 'recording' %}" class="nav-link {% if request.resolver_match.url_name == 'recording' %}active{% endif %} d-flex align-items-center">
+                            <i class="fas fa-history me-2"></i> <span>预约记录</span>
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="{% url 'warn' %}" class="nav-link {% if request.resolver_match.url_name == 'warn' %}active{% endif %} d-flex align-items-center">
+                            <i class="fas fa-exclamation-triangle me-2"></i> <span>警告记录</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <!-- 用户资料部分 -->
+            <div class="user-profile p-3 border-bottom">
+                <div class="dropdown">
+                    <div class="d-flex align-items-center user-info" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="avatar-wrapper">
+                            <img src="/media/{{ request.session.photo }}" alt="用户头像" class="rounded-circle" width="40" height="40">
+                        </div>
+                        <div class="ms-2">
+                            <h6 class="mb-0 user-name">{{ request.session.name.name }}</h6>
+                            <small class="text-muted student-id">{{ request.session.student_id }}</small>
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu" style="z-index: 1200;">
+                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal"><i class="fas fa-key me-2"></i>修改密码</a></li>
+                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changeAvatarModal"><i class="fas fa-user-circle me-2"></i>更换头像</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>退出登录</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- 音乐播放器部分 -->
+            <div class="music-player">
+                <div class="music-player-header">
+                    <div class="music-player-title">
+                        <i class="fas fa-headphones-alt"></i> 自习音乐
+                        <span class="title-wave">🎵</span>
+                    </div>
+                    <button class="minimize-btn">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="music-player-content">
+                    <div id="songTitle" class="marquee">正在加载...</div>
+                    <div class="music-controls">
+                        <button id="prevTrack" class="control-btn">
+                            <i class="fas fa-step-backward"></i>
+                        </button>
+                        <button id="playPause" class="control-btn">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button id="nextTrack" class="control-btn">
+                            <i class="fas fa-step-forward"></i>
+                        </button>
+                    </div>
+                    <div class="music-progress">
+                        <div class="music-progress-bar"></div>
+                        <div class="progress-handle"></div>
+                    </div>
+                    <div class="music-time">
+                        <span id="currentTime">0:00</span>
+                        <span id="duration">0:00</span>
+                    </div>
+                    <div class="volume-control">
+                        <button class="volume-btn">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                        <div class="volume-slider-container">
+                            <div class="volume-slider-bg"></div>
+                            <div class="volume-slider-fill"></div>
+                            <div class="volume-handle"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        {% block index %}{% endblock %}
+    </div>
+</div>
+
+{% include 'index/modals.html' %}
+
+<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/music-player.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

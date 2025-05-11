@@ -1,0 +1,397 @@
+/* 音乐播放器整体样式 */
+.music-player {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1),
+                0 0 1px rgba(0, 0, 0, 0.1);
+    color: #333;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 300px;
+    z-index: 1000;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    touch-action: none;
+}
+
+/* 拖拽时的样式 */
+.music-player.dragging {
+    opacity: 0.95;
+    transform: scale(1.02);
+    transition: none;
+    cursor: grabbing !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+
+.music-player.minimized {
+    height: 64px !important;
+    padding: 12px 16px;
+    width: 260px;
+}
+
+.music-player.minimized .music-player-content {
+    display: none;
+}
+
+.music-player::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        #2196f3 0%,
+        #03a9f4 50%,
+        #00bcd4 100%
+    );
+}
+
+/* 播放器头部 */
+.music-player-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    cursor: grab;
+    padding: 0 4px;
+    position: relative;
+}
+
+.music-player-header:active {
+    cursor: grabbing;
+}
+
+.music-player-title {
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #333;
+}
+
+.title-wave {
+    display: inline-block;
+    animation: wave 2s infinite;
+    color: #2196f3;
+}
+
+@keyframes wave {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(10deg); }
+    75% { transform: rotate(-10deg); }
+}
+
+.minimize-btn {
+    background: transparent;
+    border: none;
+    color: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    padding: 6px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    z-index: 2;
+    border-radius: 50%;
+}
+
+.minimize-btn:hover {
+    color: #333;
+    transform: scale(1.1);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* 播放器内容区 */
+.music-player-content {
+    padding: 0 4px;
+    transition: all 0.3s ease;
+}
+
+/* 歌曲标题 */
+.marquee {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    margin: 12px 0;
+    font-size: 14px;
+    color: #333;
+    text-align: center;
+}
+
+/* 控制按钮 */
+.music-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin: 16px 0;
+}
+
+.control-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: #666;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.control-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(1.1);
+    color: #333;
+}
+
+#playPause {
+    width: 44px;
+    height: 44px;
+    background: #2196f3;
+    color: white;
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+#playPause:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(33, 150, 243, 0.4);
+    background: #1e88e5;
+}
+
+/* 进度条 */
+.music-progress {
+    height: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    margin: 12px 0 4px;
+    position: relative;
+    cursor: pointer;
+    overflow: visible;
+    z-index: 5;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.music-progress-bar {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, #2196f3, #1976d2);
+    border-radius: 6px;
+    position: relative;
+    transition: width 0.1s linear;
+    z-index: 6;
+    box-shadow: 0 0 6px rgba(33, 150, 243, 0.4);
+}
+
+.progress-handle {
+    width: 20px;
+    height: 20px;
+    background: #2196f3;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    opacity: 1;
+    transition: all 0.2s ease;
+    z-index: 10;
+    pointer-events: none;
+    margin-left: -10px;
+}
+
+.music-progress:hover .progress-handle {
+    transform: translateY(-50%) scale(1.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* 时间显示 */
+.music-time {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #666;
+    margin: 6px 0;
+}
+
+/* 音量控制 */
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 0 4px;
+    position: relative;
+}
+
+.volume-btn {
+    background: transparent;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    padding: 6px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.volume-btn:hover {
+    color: #333;
+    transform: scale(1.1);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* 全新音量滑块设计 */
+.volume-slider-container {
+    flex-grow: 1;
+    position: relative;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* 滑块背景轨道 */
+.volume-slider-bg {
+    position: absolute;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* 滑块已填充部分 */
+.volume-slider-fill {
+    position: absolute;
+    height: 6px;
+    left: 0;
+    width: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #2196f3, #1976d2);
+    box-shadow: 0 0 4px rgba(33, 150, 243, 0.3);
+    transition: width 0.1s ease;
+    z-index: 2;
+}
+
+/* 音量滑块手柄 */
+.volume-handle {
+    width: 16px;
+    height: 16px;
+    background: #2196f3;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    transform: translateY(-50%);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    opacity: 1;
+    z-index: 3;
+    pointer-events: none;
+    margin-left: -8px;
+}
+
+.volume-slider-container:hover .volume-handle {
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 2px 6px rgba(33, 150, 243, 0.4);
+}
+
+.volume-slider-container.active .volume-handle {
+    transform: translateY(-50%) scale(1.2);
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.5);
+}
+
+/* 音量状态特殊样式 */
+.volume-slider-container.volume-low .volume-slider-fill {
+    background: linear-gradient(90deg, #64b5f6, #42a5f5);
+}
+
+.volume-slider-container.volume-medium .volume-slider-fill {
+    background: linear-gradient(90deg, #2196f3, #1e88e5);
+}
+
+.volume-slider-container.volume-high .volume-slider-fill {
+    background: linear-gradient(90deg, #1976d2, #1565c0);
+}
+
+/* 音量滑块特殊交互效果 */
+.volume-slider-container:hover .volume-slider-bg {
+    height: 6px;
+}
+
+.volume-slider-container:hover .volume-slider-fill {
+    height: 6px;
+}
+
+/* 音量容器激活状态 */
+.volume-slider-container.active .volume-slider-fill,
+.volume-slider-container:active .volume-slider-fill {
+    background: #1565c0;
+}
+
+/* 音量滑块激活状态增强 */
+.volume-slider-container.active .volume-slider-bg,
+.volume-slider-container:active .volume-slider-bg {
+    height: 6px;
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+/* 滑块激活区域的通用增强 */
+.volume-slider-container.active,
+.volume-slider-container:active {
+    cursor: grabbing;
+}
+
+/* 当音量为0时的特殊样式 */
+.volume-slider-fill.empty {
+    min-width: 0 !important;
+}
+
+/* 当音量为0时隐藏末端指示器 */
+.volume-slider-fill.empty + .volume-handle {
+    opacity: 0;
+}
+
+/* 静音状态下的特殊样式 */
+.volume-slider-container.active .volume-slider-fill.empty,
+.volume-slider-container:active .volume-slider-fill.empty {
+    min-width: 0;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .music-player {
+        bottom: 20px;
+        right: 20px;
+        width: 280px;
+        padding: 12px;
+    }
+    
+    .music-player.minimized {
+        width: 240px;
+        padding: 10px 12px;
+    }
+    
+    .music-controls {
+        gap: 16px;
+    }
+    
+    .control-btn {
+        width: 32px;
+        height: 32px;
+    }
+    
+    #playPause {
+        width: 40px;
+        height: 40px;
+    }
+}

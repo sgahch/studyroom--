@@ -1,0 +1,189 @@
+<html lang="zh-CN">
+{% load static %}
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" type="image/png" sizes="144x144" href="{% static 'img/logo.svg' %}"/>
+    <title>登录</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{% static  'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <meta name="theme-color" content="#7952b3">
+
+
+    <style>
+        :root {
+            --primary-color: #7952b3;
+            --hover-color: #6742a4;
+        }
+        
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+
+        .b-example-divider {
+            height: 3rem;
+            background-color: rgba(0, 0, 0, .1);
+            border: solid rgba(0, 0, 0, .15);
+            border-width: 1px 0;
+            box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+        }
+
+        .b-example-vr {
+            flex-shrink: 0;
+            width: 1.5rem;
+            height: 100vh;
+        }
+
+        .bi {
+            vertical-align: -.125em;
+            fill: currentColor;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            padding-top: 40px;
+            padding-bottom: 40px;
+            background-color: #f5f5f5;
+        }
+
+        .form-signin {
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+            margin: auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .form-signin:hover {
+            transform: translateY(-5px);
+        }
+
+        .form-signin .checkbox {
+            font-weight: 400;
+        }
+
+        .form-signin .form-floating:focus-within {
+            z-index: 2;
+        }
+
+        .form-signin input {
+            margin-bottom: 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border: 2px solid #e9ecef;
+        }
+
+        .form-signin input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(121, 82, 179, 0.25);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            transition: all 0.3s ease;
+            padding: 12px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--hover-color);
+            border-color: var(--hover-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(121, 82, 179, 0.2);
+        }
+
+        .form-control {
+            padding: 12px;
+            font-size: 1rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .logo-animation {
+            animation: float 6s ease-in-out infinite;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+</head>
+<body class="text-center">
+
+<main class="form-signin">
+    <form method="post" action="{% url 'register' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <img class="mb-4 logo-animation" src="{% static 'img/logo.svg' %}" alt="" width="72" height="72">
+        <h1 class="h3 mb-3 fw-normal">用户注册</h1>
+
+        <div class="form text-start mb-3">
+            <p class="text-center text-danger h5 mb-3">{{ msg }}</p>
+            <label class="form-label" for="floatingInput">用户名</label>
+            <input required type="text" name="name" class="form-control" placeholder="请输入用户名">
+        </div>
+        <div class="form text-start mb-3">
+            <label class="form-label" for="password">密码</label>
+            <input required type="password" name="password" class="form-control" placeholder="请输入密码" id="password">
+        </div>
+        <div class="form text-start mb-3">
+            <label class="form-label" for="photo">用户图片</label>
+            <input required type="file" name="photo" class="form-control" id="photo">
+        </div>
+        <div class="form text-start mb-3">
+            <label class="form-label" for="phone">手机号</label>
+            <input required type="tel" name="phone" class="form-control" placeholder="请输入手机号" id="phone">
+        </div>
+        <div class="form text-start mb-3">
+            <label class="form-label" for="email">邮箱</label>
+            <input required type="email" name="email" class="form-control" placeholder="请输入邮箱" id="email">
+        </div>
+
+
+        <div class="checkbox mb-3 mt-2 text-start">
+            <label>
+                <input type="checkbox" value="remember-me"> 记住我
+            </label>
+        </div>
+        <button class="w-100 btn btn-lg btn-primary" type="submit">注册</button>
+
+        <p class="mt-5 mb-3 text-muted">© 2000-2024</p>
+    </form>
+</main>
+
+<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<div class="xl-chrome-ext-bar" id="xl_chrome_ext_{4DB361DE-01F7-4376-B494-639E489D19ED}" style="display: none;">
+    <div class="xl-chrome-ext-bar__logo"></div>
+
+    <a id="xl_chrome_ext_download" href="javascript:;" class="xl-chrome-ext-bar__option">下载视频</a>
+    <a id="xl_chrome_ext_close" href="javascript:;" class="xl-chrome-ext-bar__close"></a>
+</div>
+</body>
+</html>

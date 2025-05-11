@@ -1,0 +1,539 @@
+{% extends 'index/base.html' %}
+{% load static %}
+
+{% block title %}
+    首页
+{% endblock %}
+
+{% block index_active %}
+    active
+{% endblock %}
+
+{% block index %}
+<div class="main-container" id="themeContainer" style="background: linear-gradient(135deg, #1a2a3d 0%, #2c3e50 100%); min-height: calc(100vh - 76px); margin: -20px; color: white;">
+    <!-- 主题切换按钮 -->
+    <button id="themeToggle" class="btn position-fixed" style="top: 20px; right: 20px; z-index: 1000; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 12px; padding: 10px 15px;">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- 时间显示 -->
+    <div class="time-display text-center" style="padding-top: 60px;">
+        <h1 id="current-time" style="font-size: 5rem; margin-bottom: 0.5rem; font-weight: 200; letter-spacing: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.2);"></h1>
+        <h2 id="current-date" style="font-size: 1.8rem; margin-bottom: 2rem; opacity: 0.9; font-weight: 300; letter-spacing: 2px;"></h2>
+        <div class="weather-info" style="font-size: 1.4rem; margin: 1rem 0 3rem;">
+            <i class="fas fa-sun" style="color: #FFD700; opacity: 0.9; filter: drop-shadow(0 0 10px rgba(255,215,0,0.3));"></i>
+        </div>
+    </div>
+
+    <!-- 学习时间信息 -->
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="study-time-info p-4" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.1);">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 style="font-size: 1.4rem; font-weight: 500; margin-bottom: 1rem;">专注计时</h3>
+                            <div class="input-group" style="width: 160px;">
+                                <input type="number" id="studyTimeInput" class="form-control bg-dark bg-opacity-50 text-white" value="15" min="1" style="border-radius: 12px 0 0 12px; border: 1px solid rgba(255,255,255,0.2); height: 45px; font-size: 1.1rem;">
+                                <button class="btn btn-primary" onclick="startStudyTimer()" style="border-radius: 0 12px 12px 0; border: none; height: 45px; min-width: 80px; font-weight: 500;">
+                                    开始
+                                </button>
+                            </div>
+                        </div>
+                        <div class="position-relative" style="width: 150px; height: 150px;">
+                            <svg class="progress-ring" width="150" height="150">
+                                <circle class="progress-ring-circle-bg" cx="75" cy="75" r="65" 
+                                    style="stroke: rgba(255,255,255,0.1); stroke-width: 8; fill: transparent;"/>
+                                <circle class="progress-ring-circle" cx="75" cy="75" r="65" 
+                                    style="stroke: var(--bs-primary); stroke-width: 8; fill: transparent; 
+                                    stroke-linecap: round; transform: rotate(-90deg); transform-origin: 75px 75px; stroke-dasharray: 408; stroke-dashoffset: 0;"/>
+                            </svg>
+                            <div class="position-absolute top-50 start-50 translate-middle text-center">
+                                <div id="timeLeft" style="font-size: 2rem; font-weight: 300; font-variant-numeric: tabular-nums;">--:--</div>
+                                <small class="text-white-50">剩余时间</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 待办事项 -->
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-8 col-lg-6">
+                <div class="todo-container p-4" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.1);">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 style="font-size: 1.4rem; font-weight: 500; margin: 0;">今日份清单</h3>
+                        <span class="badge bg-primary" style="font-weight: 400; padding: 0.5rem 1rem; border-radius: 10px;" id="todoCount">0 项待办</span>
+                    </div>
+                    <form>
+                        <div class="input-group mb-3">
+                            <input type="text" id="todoInput" class="form-control bg-dark bg-opacity-50 text-white" placeholder="写下你的计划..." style="border-radius: 12px 0 0 12px; border: 1px solid rgba(255,255,255,0.2); height: 45px; font-size: 1rem;">
+                            <button class="btn btn-primary" onclick="addTodo(event)" style="border-radius: 0 12px 12px 0; border: none; height: 45px; min-width: 80px; font-weight: 500;">
+                                添加
+                            </button>
+                        </div>
+                    </form>
+                    <ul id="todoList" class="list-unstyled" style="max-height: 300px; overflow-y: auto;">
+                        <!-- 待办事项将在这里动态添加 -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* 自定义滚动条 */
+#todoList::-webkit-scrollbar {
+    width: 6px;
+}
+
+#todoList::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+}
+
+#todoList::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 3px;
+}
+
+#todoList::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+/* 输入框聚焦效果 */
+.form-control:focus {
+    border-color: rgba(255,255,255,0.3) !important;
+    box-shadow: 0 0 0 0.25rem rgba(255,255,255,0.1) !important;
+}
+
+/* 按钮悬停效果 */
+.btn {
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* 待办事项样式 */
+#todoList li {
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    padding: 12px 16px;
+    transition: all 0.3s ease;
+}
+
+#todoList li:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.form-check-input {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px !important;
+    border: 2px solid rgba(255,255,255,0.3) !important;
+    background-color: transparent !important;
+}
+
+.form-check-input:checked {
+    background-color: var(--bs-primary) !important;
+    border-color: var(--bs-primary) !important;
+}
+
+/* 圆形进度条动画 */
+.progress-ring-circle {
+    transition: stroke-dashoffset 0.5s ease-in-out;
+    stroke-dasharray: 408;
+    stroke-dashoffset: 0;
+}
+
+.progress-ring-circle-bg {
+    stroke-width: 8;
+    fill: transparent;
+}
+
+/* 添加脉冲动画效果 */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.time-pulse {
+    animation: pulse 2s infinite;
+}
+</style>
+
+<script>
+let studyTimer = null;
+let startTime = null;
+let studyDuration = null;
+
+// 从sessionStorage加载学习时间设置
+function loadStudyTimeSettings() {
+    const savedState = JSON.parse(sessionStorage.getItem('studyState') || '{}');
+    if (savedState.timeInput) {
+        document.getElementById('studyTimeInput').value = savedState.timeInput;
+    }
+    if (savedState.startTime && savedState.duration) {
+        startTime = new Date(savedState.startTime);
+        studyDuration = savedState.duration;
+        updateStudyProgress();
+        studyTimer = setInterval(updateStudyProgress, 1000);
+        document.querySelector('button[onclick="startStudyTimer()"]').textContent = '停止';
+        document.querySelector('button[onclick="startStudyTimer()"]').classList.add('btn-danger');
+        document.querySelector('button[onclick="startStudyTimer()"]').classList.remove('btn-primary');
+    }
+}
+
+function startStudyTimer() {
+    if (studyTimer) {
+        clearInterval(studyTimer);
+        studyTimer = null;
+        const btn = document.querySelector('button[onclick="startStudyTimer()"]');
+        btn.textContent = '开始';
+        btn.classList.remove('btn-danger');
+        btn.classList.add('btn-primary');
+        document.querySelector('.progress-ring-circle').style.strokeDashoffset = '0';
+        document.getElementById('timeLeft').classList.remove('time-pulse');
+        sessionStorage.removeItem('studyState');
+        return;
+    }
+
+    const duration = parseInt(document.getElementById('studyTimeInput').value);
+    if (isNaN(duration) || duration <= 0) {
+        alert('请输入有效的时间！');
+        return;
+    }
+
+    startTime = new Date();
+    studyDuration = duration * 60 * 1000; // 转换为毫秒
+
+    // 保存到sessionStorage
+    sessionStorage.setItem('studyState', JSON.stringify({
+        timeInput: duration,
+        startTime: startTime.toISOString(),
+        duration: studyDuration
+    }));
+
+    const btn = document.querySelector('button[onclick="startStudyTimer()"]');
+    btn.textContent = '停止';
+    btn.classList.remove('btn-primary');
+    btn.classList.add('btn-danger');
+    
+    // 设置初始进度
+    document.querySelector('.progress-ring-circle').style.strokeDashoffset = '408';
+    document.getElementById('timeLeft').classList.add('time-pulse');
+    
+    updateStudyProgress();
+    studyTimer = setInterval(updateStudyProgress, 1000);
+}
+
+function updateStudyProgress() {
+    if (!startTime || !studyDuration) return;
+
+    const now = new Date();
+    const elapsed = now - startTime;
+    const remaining = studyDuration - elapsed;
+
+    if (remaining <= 0) {
+        clearInterval(studyTimer);
+        studyTimer = null;
+        document.getElementById('timeLeft').textContent = '时间到！';
+        document.querySelector('.progress-ring-circle').style.strokeDashoffset = '0';
+        document.getElementById('timeLeft').classList.remove('time-pulse');
+        const btn = document.querySelector('button[onclick="startStudyTimer()"]');
+        btn.textContent = '开始';
+        btn.classList.remove('btn-danger');
+        btn.classList.add('btn-primary');
+        sessionStorage.removeItem('studyState');
+        
+        // 添加提醒声音
+        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZSA0PVqzn77BdGAg+ltryxnMpBSl+zPDckz4LF2S57OihUBELTKXh8bllHgU2jdXzzn0vBiZ6yu/glEILGGe37OmmTxAKSKPg8btmIAY0i9PzzIA0ByF2ye/ilEILGGe37OmmTxAKSKPg8btmIAY0i9PzzIA0ByF2ye/ilEILGGe37OmmTxAKSKPg8btmIAY0i9PzzIA0ByF2ye/ilEILGGe37OmmTxAKSKPg8btmIAY0i9PzzIA0ByF2ye/ilEILGGe37OmmTxAKSKPg8btmIAY0i9PzzIA0ByF2ye/ilEILGGe37OmmTxAKSKPg8btmIAY0i9PzzIA0ByF2ye/ilEILGGe37OmmTxAKSKPg8btmIAY0i9PzzIA0ByF2ye/ilEIMAAA=');
+        audio.play();
+        return;
+    }
+
+    const minutes = Math.floor(remaining / 60000);
+    const seconds = Math.floor((remaining % 60000) / 1000);
+    document.getElementById('timeLeft').textContent = 
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+    const progress = ((studyDuration - remaining) / studyDuration);
+    const circumference = 2 * Math.PI * 65; // 圆的周长 = 2πr
+    const offset = circumference * (1 - progress);
+    document.querySelector('.progress-ring-circle').style.strokeDashoffset = offset;
+}
+
+function updateTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('zh-CN', { hour12: false });
+    const dateString = now.toLocaleDateString('zh-CN', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric', 
+        weekday: 'long' 
+    });
+    
+    document.getElementById('current-time').textContent = timeString;
+    document.getElementById('current-date').textContent = dateString;
+}
+
+function updateTodoCount() {
+    const count = document.querySelectorAll('#todoList li').length;
+    const completedCount = document.querySelectorAll('#todoList li input[type="checkbox"]:checked').length;
+    document.getElementById('todoCount').textContent = `${completedCount}/${count} 项完成`;
+}
+
+function saveTodos() {
+    updateTodoCount();
+}
+
+function loadTodos() {
+    fetch('/index/todos/')
+    .then(response => {
+        if (response.status === 401) {
+            console.log('User not logged in');
+            return;
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data && data.status === 'success') {
+            const todoList = document.getElementById('todoList');
+            todoList.innerHTML = '';  // 清空现有列表
+            
+            data.todos.forEach(todo => {
+                const li = document.createElement('li');
+                li.className = 'd-flex align-items-center';
+                li.innerHTML = `
+                    <input type="checkbox" class="form-check-input me-3" style="cursor: pointer;" 
+                           onchange="updateTodoStatus(${todo.id}, this.checked)" 
+                           ${todo.completed ? 'checked' : ''}>
+                    <span class="flex-grow-1" style="${todo.completed ? 'text-decoration: line-through; opacity: 0.6;' : ''}">${todo.content}</span>
+                    <button class="btn btn-link text-danger p-0 ms-2" onclick="deleteTodo(${todo.id})" 
+                            style="text-decoration: none;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                todoList.appendChild(li);
+            });
+            updateTodoCount();
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function addTodo(event) {
+    if (event) {
+        event.preventDefault();
+    }
+    const input = document.getElementById('todoInput');
+    const text = input.value.trim();
+    
+    if (!text) return;
+    
+    console.log('Adding todo:', text);  // 调试信息
+    
+    fetch('/index/todos/add/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({ content: text })
+    })
+    .then(response => {
+        console.log('Response:', response);  // 调试信息
+        if (response.status === 401) {
+            window.location.href = '/login/';
+            throw new Error('请先登录');
+        }
+        if (!response.ok) {
+            return response.text().then(text => {
+                console.log('Error response text:', text);  // 调试信息
+                try {
+                    const data = JSON.parse(text);
+                    throw new Error(data.message || '添加失败');
+                } catch (e) {
+                    throw new Error('服务器返回了非JSON数据:' + text);
+                }
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Success data:', data);  // 调试信息
+        if (data.status === 'success') {
+            const todoList = document.getElementById('todoList');
+            const li = document.createElement('li');
+            li.className = 'd-flex align-items-center';
+            li.innerHTML = `
+                <input type="checkbox" class="form-check-input me-3" style="cursor: pointer;" 
+                       onchange="updateTodoStatus(${data.id}, this.checked)">
+                <span class="flex-grow-1">${data.content}</span>
+                <button class="btn btn-link text-danger p-0 ms-2" onclick="deleteTodo(${data.id})" 
+                        style="text-decoration: none;">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            todoList.appendChild(li);
+            input.value = '';
+            updateTodoCount();
+        } else {
+            throw new Error(data.message || '添加失败');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);  // 调试信息
+        if (error.message !== '请先登录') {  // 如果不是未登录错误，显示错误消息
+            alert('添加待办事项失败：' + error.message);
+        }
+    });
+}
+
+function updateTodoStatus(todoId, completed) {
+    fetch(`/index/todos/${todoId}/update/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({ completed: completed })
+    })
+    .then(response => {
+        if (response.status === 401) {
+            window.location.href = '/login/';
+            throw new Error('请先登录');
+        }
+        if (!response.ok) {
+            return response.json().then(data => {
+                throw new Error(data.message || '更新失败');
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'success') {
+            const todoItem = document.querySelector(`[onclick="deleteTodo(${todoId})"]`).parentNode;
+            const textSpan = todoItem.querySelector('span');
+            if (completed) {
+                textSpan.style.textDecoration = 'line-through';
+                textSpan.style.opacity = '0.6';
+            } else {
+                textSpan.style.textDecoration = 'none';
+                textSpan.style.opacity = '1';
+            }
+        } else {
+            throw new Error(data.message || '更新失败');
+        }
+    })
+    .catch(error => {
+        if (error.message !== '请先登录') {
+            alert('更新待办事项失败：' + error.message);
+        }
+    });
+}
+
+function deleteTodo(todoId) {
+    fetch(`/index/todos/${todoId}/delete/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        if (response.status === 401) {
+            window.location.href = '/login/';
+            throw new Error('请先登录');
+        }
+        if (!response.ok) {
+            return response.json().then(data => {
+                throw new Error(data.message || '删除失败');
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'success') {
+            const todoItem = document.querySelector(`[onclick="deleteTodo(${todoId})"]`).parentNode;
+            todoItem.remove();
+            updateTodoCount();
+        } else {
+            throw new Error(data.message || '删除失败');
+        }
+    })
+    .catch(error => {
+        if (error.message !== '请先登录') {
+            alert('删除待办事项失败：' + error.message);
+        }
+    });
+}
+
+// 页面加载完成后加载待办事项
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Loading todos...');  // 调试信息
+    loadTodos();
+});
+
+// 主题切换功能
+let isDarkTheme = localStorage.getItem('theme') === 'dark';
+
+function updateThemeStyles() {
+    const container = document.getElementById('themeContainer');
+    const themeIcon = document.querySelector('#themeToggle i');
+
+    if (isDarkTheme) {
+        container.style.background = 'linear-gradient(135deg, #1a2a3d 0%, #2c3e50 100%)';
+        container.style.color = 'white';
+        themeIcon.className = 'fas fa-moon';
+    } else {
+        container.style.background = 'linear-gradient(135deg, #87CEEB 0%, #E0FFFF 100%)';
+        container.style.color = '#333';
+        themeIcon.className = 'fas fa-sun';
+    }
+}
+
+function toggleTheme() {
+    isDarkTheme = !isDarkTheme;
+    localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
+    updateThemeStyles();
+}
+
+// 页面加载时初始化
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Loading todos...');  // 调试信息
+    loadStudyTimeSettings();
+    loadTodos();
+    updateThemeStyles();
+    updateTime();
+    setInterval(updateTime, 1000);
+    
+    // 添加主题切换按钮事件监听器
+    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+    
+    // 添加回车键提交待办事项
+    document.getElementById('todoInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            addTodo(e);
+        }
+    });
+});
+</script>
+
+{% endblock %}

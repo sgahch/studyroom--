@@ -1,0 +1,31 @@
+{% extends 'index/base.html' %}
+
+{% block index %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">修改头像</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="text-center mb-4">
+                            <img src="/media/{{ request.session.name.photo }}" alt="当前头像" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                        </div>
+                        <div class="form-group">
+                            <label for="avatar">选择新头像</label>
+                            <input type="file" class="form-control-file" id="avatar" name="avatar" accept="image/*" required>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary">更新头像</button>
+                            <a href="/" class="btn btn-secondary ml-2">返回</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

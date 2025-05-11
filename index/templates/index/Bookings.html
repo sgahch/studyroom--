@@ -1,0 +1,78 @@
+{% extends 'index/base.html' %}
+{% load static %}
+{% block title %}
+    选择自习室
+{% endblock %}
+
+{% block bookings_active %}
+    active
+{% endblock %}
+
+{% block index %}
+<div class="main-container" style="background: linear-gradient(to bottom, #1a2a3d, #2c3e50); min-height: calc(100vh - 76px); margin: -20px; padding: 2rem;">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col">
+                <h2 class="text-white mb-0 d-flex align-items-center">
+                    <i class="fas fa-chair me-3"></i>
+                    选择自习室
+                    <span class="ms-3 badge bg-info" style="font-size: 0.9rem;">
+                        当前开放 {{ room|length }} 间
+                    </span>
+                </h2>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            {% for i in room %}
+            <div class="col-12 col-md-6 col-lg-4">
+                <a href="{% url 'seat' i.id %}" class="text-decoration-none">
+                    <div class="card h-100 bg-dark text-white border-0 rounded-4 shadow-lg hover-card">
+                        <div class="position-relative">
+                            <img src="/media/{{ i.photo }}" class="card-img-top rounded-top-4" alt="{{ i.name }}" style="height: 200px; object-fit: cover;">
+                            <div class="position-absolute top-0 end-0 m-3">
+                                <span class="badge bg-primary">
+                                    <i class="fas fa-users me-1"></i>
+                                    {{ i.seats }} 座位
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title h4 mb-3">{{ i.name }}</h3>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-clock text-info me-2"></i>
+                                    <small>开放时间: 8:00-22:00</small>
+                                </div>
+                                <button class="btn btn-outline-light btn-sm">
+                                    选择座位 <i class="fas fa-arrow-right ms-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+.hover-card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.hover-card:hover {
+    transform: translateY(-5px);
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px);
+}
+
+.badge {
+    font-weight: 500;
+}
+</style>
+{% endblock %}

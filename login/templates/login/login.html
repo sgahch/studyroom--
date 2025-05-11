@@ -1,0 +1,196 @@
+<html lang="zh-CN">
+{% load static %}
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" type="image/png" sizes="144x144" href="{% static 'img/logo.svg' %}"/>
+    <title>登录</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{% static  'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <meta name="theme-color" content="#7952b3">
+    <link href="{% static 'css/dynamic-background.css' %}" rel="stylesheet">
+
+
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+
+        .b-example-divider {
+            height: 3rem;
+            background-color: rgba(0, 0, 0, .1);
+            border: solid rgba(0, 0, 0, .15);
+            border-width: 1px 0;
+            box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+        }
+
+        .b-example-vr {
+            flex-shrink: 0;
+            width: 1.5rem;
+            height: 100vh;
+        }
+
+        .bi {
+            vertical-align: -.125em;
+            fill: currentColor;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            padding-top: 100px;
+            padding-bottom: 40px;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+            background: url('{% static "img/background.jpg" %}') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        :root {
+            --primary-color: #ae84ec;
+            --hover-color: #6742a4;
+        }
+
+        .form-signin {
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+            margin: auto;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 15px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .form-signin:hover {
+            box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+        }
+
+        .form-signin input {
+            margin-bottom: 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border: 2px solid #e9ecef;
+        }
+
+        .form-signin input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(121, 82, 179, 0.25);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            transition: all 0.3s ease;
+            padding: 12px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--hover-color);
+            border-color: var(--hover-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(121, 82, 179, 0.2);
+        }
+
+        .logo-animation {
+            animation: float 6s ease-in-out infinite;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .form-signin .checkbox {
+            font-weight: 400;
+        }
+
+        .form-signin .form-floating:focus-within {
+            z-index: 2;
+        }
+
+        .form-signin input[type="email"] {
+            margin-bottom: -1px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .form-signin input[type="password"] {
+            margin-bottom: 10px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+    </style>
+</head>
+<body class="text-center">
+
+<main class="form-signin">
+    <form action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="path_url" value="{{ path_url }}">
+        <img class="mb-4 logo-animation" src="{% static 'img/logo.svg' %}" alt="" width="72" height="72">
+        <h1 class="h3 mb-3 fw-normal">用户登录</h1>
+
+        <div class="form-floating">
+            <p class="text-center text-danger h4">{{ msg }}</p>
+            <input type="text" required name="name" class="form-control" id="floatingInput"
+                   placeholder="name@example.com">
+            <label for="floatingInput">用户名</label>
+        </div>
+        <div class="form-floating">
+            <input type="password" required name="password" class="form-control" id="floatingPassword"
+                   placeholder="Password">
+            <label for="floatingPassword">密码</label>
+        </div>
+
+        <div class="checkbox mb-3 text-start">
+            <label>
+                <input type="checkbox" value="remember-me"> 记住我
+            </label>
+        </div>
+        <button class="w-100 btn btn-lg btn-primary" type="submit">登录</button>
+        <a href="{% url 'register' %}" class="w-100 btn btn-lg btn-light mt-3">注册</a>
+        <a href="/admin/login/" class="w-100 btn btn-lg btn-outline-secondary mt-3">
+            <i class="fas fa-user-shield"></i> 管理员登录
+        </a>
+        <p class="mt-5 mb-3 text-muted">© 2000-2024</p>
+    </form>
+</main>
+
+<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script>
+    // Define the getUrlParam function
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]); return null;
+    }
+
+    // Removed the call to getUrlParam as it was causing errors and might be redundant
+    // var path_url = getUrlParam('path');
+    // console.log('path_url', path_url);
+    // You might want to use path_url here, for example, setting the hidden input value if needed,
+    // although Django template variable {{ path_url }} should already handle it.
+</script>
+</body>
+</html>
